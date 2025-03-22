@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post.title }}</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2cm;
+        }
+        .title {
+            font-size: 24pt;
+            font-weight: bold;
+            margin-bottom: 0.5cm;
+        }
+        .metadata {
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 1cm;
+        }
+        .content {
+            font-size: 11pt;
+            text-align: justify;
+        }
+        .footer {
+            text-align: center;
+            font-size: 9pt;
+            color: #999;
+            margin-top: 1cm;
+            border-top: 1px solid #ddd;
+            padding-top: 0.5cm;
+        }
+        .categories {
+            margin-bottom: 1cm;
+            font-size: 10pt;
+        }
+        .category {
+            background-color: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1cm auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">{{ post.title }}</div>
+        <div class="metadata">
+            Author: {{ post.author.username }} | Published: {{ post.created_on|date:"F d, Y" }}
+            {% if post.created_on != post.updated_on %}
+            | Updated: {{ post.updated_on|date:"F d, Y" }}
+            {% endif %}
+        </div>
+        
+        <div class="categories">
+            Categories: 
+            {% for category in post.categories.all %}
+                <span class="category">{{ category.name }}</span>
+            {% empty %}
+                <span class="category">Uncategorized</span>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% if post.featured_image %}
+    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+    {% endif %}
+    
+    <div class="content">
+        {{ post.content|linebreaks }}
+    </div>
+    
+    <div class="footer">
+        <p>Generated from Django Mini Blog on {{ post.created_on|date:"F d, Y" }}</p>
+        <p>© {% now "Y" %} Django Mini Blog. All rights reserved.</p>
+    </div>
+</body>
+</html>

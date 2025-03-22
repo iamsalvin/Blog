@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results - Django Mini Blog{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Search Results for "{{ query }}"</h1>
+
+{% if posts %}
+    <p>Found {{ posts|length }} result{{ posts|length|pluralize }}.</p>
+    {% for post in posts %}
+        <div class="card mb-4">
+            {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h2 class="card-title">{{ post.title }}</h2>
+                <p class="card-text text-muted small">
+                    <i class="fas fa-user"></i> {{ post.author.username }} |
+                    <i class="fas fa-calendar"></i> {{ post.created_on|date:"F d, Y" }}
+                </p>
+                <p class="card-text">{{ post.content|truncatewords:50 }}</p>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'post_detail' post.slug %}" class="btn btn-primary">Read More</a>
+                    <div>
+                        <span class="text-muted"><i class="fas fa-heart"></i> {{ post.likes.count }}</span>
+                        <span class="text-muted ms-3"><i class="fas fa-comment"></i> {{ post.comments.count }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                Categories: 
+                {% for category in post.categories.all %}
+                    <a href="{% url 'category_posts' slug=category.slug %}" class="badge bg-secondary text-decoration-none">{{ category.name }}</a>
+                {% empty %}
+                    <span class="badge bg-light text-dark">Uncategorized</span>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">
+        No posts found matching "{{ query }}".
+    </div>
+{% endif %}
+
+<a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+{% endblock %}

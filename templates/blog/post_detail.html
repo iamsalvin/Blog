@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ object.title }} - Django Mini Blog{% endblock %}
+
+{% block extra_css %}
+<style>
+    .like-btn {
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .like-btn:hover {
+        transform: scale(1.1);
+    }
+    .liked {
+        color: #dc3545;
+    }
+    .feature-buttons {
+        margin-bottom: 1.5rem;
+    }
+    .feature-buttons .btn {
+        margin-right: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+    }
+    .feature-buttons .btn i {
+        margin-right: 0.5rem;
+    }
+    .audio-player {
+        margin-top: 1rem;
+        width: 100%;
+        display: none;
+    }
+    .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="blog-post">
+    <h1 class="mb-1">{{ object.title }}</h1>
+    
+    <div class="text-muted mb-3">
+        <p>
+            <i class="fas fa-user"></i> 
+            <a href="{% url 'profile' username=object.author.username %}">{{ object.author.username }}</a> | 
+            <i class="fas fa-calendar"></i> {{ object.created_on|date:"F d, Y" }}
+            
+            {% if object.created_on != object.updated_on %}
+                | <i class="fas fa-edit"></i> Updated: {{ object.updated_on|date:"F d, Y" }}
+            {% endif %}
+        </p>
+    </div>
+    
+    <div class="mb-3">
+        Categories: 
+        {% for category in object.categories.all %}
+            <a href="{% url 'category_posts' slug=category.slug %}" class="badge bg-secondary text-decoration-none">{{ category.name }}</a>
+        {% empty %}
+            <span class="badge bg-light text-dark">Uncategorized</span>
+        {% endfor %}
+    </div>
+    
+    <div class="feature-buttons">
+        <a href="{% url 'download_post_pdf' object.slug %}" class="btn btn-primary">
+            <i class="fas fa-file-pdf"></i> Download as PDF
+        </a>
+        <button id="narrate-btn" class="btn btn-success" data-slug="{{ object.slug }}">
+            <i class="fas fa-headphones"></i>
+            <span class="spinner-border spinner-border-sm" id="audio-spinner" role="status"></span>
+            Listen to Article
+        </button>
+    </div>
+    
+    <div id="audio-container" class="audio-player">
+        <audio id="audio-player" controls class="w-100">
+            <source id="audio-source" src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    
+    {% if object.featured_image %}
+        <img src="{{ object.featured_image.url }}" class="img-fluid rounded mb-4" alt="{{ object.title }}">
+    {% endif %}
+    
+    <div class="post-content mb-4">
+        {{ object.content|linebreaks }}
+    </div>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-top border-bottom py-3">
+        <div>
+            {% if user.is_authenticated %}
+                <span id="like-count">{{ object.likes.count }}</span> 
+                <i id="like-btn" data-slug="{{ object.slug }}" 
+                   class="fas fa-heart like-btn {% if user in object.likes.all %}liked{% endif %}"></i>
+            {% else %}
+                <span>{{ object.likes.count }}</span> <i class="fas fa-heart"></i>
+            {% endif %}
+            <span class="ms-3"><i class="fas fa-comment"></i> {{ object.comments.count }}</span>
+        </div>
+        
+        {% if user == object.author %}
+            <div>
+                <a href="{% url 'post_update' object.slug %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                <a href="{% url 'post_delete' object.slug %}" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Comments Section -->
+    <section class="comments mt-5">
+        <h3>Comments ({{ object.comments.count }})</h3>
+        
+        {% if user.is_authenticated %}
+            <div class="mb-4">
+                <form method="post" action="{% url 'add_comment' object.slug %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ comment_form.content }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Comment</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="alert alert-info mb-4">
+                Please <a href="{% url 'login' %}">login</a> to leave a comment.
+            </div>
+        {% endif %}
+        
+        <div class="comment-list">
+            {% for comment in object.comments.all %}
+                {% if comment.active %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ comment.author.username }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ comment.created_on|date:"F d, Y" }}</h6>
+                            <p class="card-text">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <div class="alert alert-light">
+                    No comments yet. Be the first to comment!
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Like button functionality
+        const likeBtn = document.getElementById('like-btn');
+        
+        if (likeBtn) {
+            likeBtn.addEventListener('click', function() {
+                const postSlug = this.getAttribute('data-slug');
+                
+                fetch(`/post/${postSlug}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('like-count').textContent = data.likes_count;
+                    
+                    if (data.liked) {
+                        likeBtn.classList.add('liked');
+                    } else {
+                        likeBtn.classList.remove('liked');
+                    }
+                });
+            });
+        }
+        
+        // Audio narration functionality
+        const narrateBtn = document.getElementById('narrate-btn');
+        const audioContainer = document.getElementById('audio-container');
+        const audioPlayer = document.getElementById('audio-player');
+        const audioSource = document.getElementById('audio-source');
+        const audioSpinner = document.getElementById('audio-spinner');
+        
+        if (narrateBtn) {
+            narrateBtn.addEventListener('click', function() {
+                const postSlug = this.getAttribute('data-slug');
+                
+                // Show loading spinner
+                audioSpinner.style.display = 'inline-block';
+                narrateBtn.disabled = true;
+                
+                fetch(`/post/${postSlug}/audio/`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide spinner
+                    audioSpinner.style.display = 'none';
+                    narrateBtn.disabled = false;
+                    
+                    // Update audio source and show player
+                    audioSource.src = data.audio_url;
+                    audioPlayer.load();
+                    audioContainer.style.display = 'block';
+                    
+                    // Play audio
+                    audioPlayer.play();
+                })
+                .catch(error => {
+                    console.error('Error generating audio:', error);
+                    audioSpinner.style.display = 'none';
+                    narrateBtn.disabled = false;
+                    alert('Error generating audio narration. Please try again later.');
+                });
+            });
+        }
+        
+        // Function to get the CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+{% endblock %}

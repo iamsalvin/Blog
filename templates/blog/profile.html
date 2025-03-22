@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }}'s Profile - Django Mini Blog{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h2>{{ profile_user.username }}'s Profile</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                {% if profile_user.profile.profile_pic %}
+                    <img src="{{ profile_user.profile.profile_pic.url }}" class="img-fluid rounded-circle mb-3" alt="{{ profile_user.username }}" style="max-width: 200px;">
+                {% else %}
+                    <img src="{% static 'images/default-profile.jpg' %}" class="img-fluid rounded-circle mb-3" alt="{{ profile_user.username }}" style="max-width: 200px;">
+                {% endif %}
+                
+                {% if user == profile_user %}
+                    <a href="{% url 'update_profile' %}" class="btn btn-primary btn-sm">Edit Profile</a>
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <h4>{{ profile_user.first_name }} {{ profile_user.last_name }}</h4>
+                <p class="text-muted">@{{ profile_user.username }}</p>
+                
+                {% if profile_user.profile.bio %}
+                    <h5>Bio</h5>
+                    <p>{{ profile_user.profile.bio }}</p>
+                {% endif %}
+                
+                {% if profile_user.profile.website %}
+                    <h5>Website</h5>
+                    <p><a href="{{ profile_user.profile.website }}" target="_blank">{{ profile_user.profile.website }}</a></p>
+                {% endif %}
+                
+                <h5>Member Since</h5>
+                <p>{{ profile_user.date_joined|date:"F d, Y" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>{{ profile_user.username }}'s Posts</h3>
+{% for post in posts %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4 class="card-title"><a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a></h4>
+            <p class="card-text text-muted small">
+                <i class="fas fa-calendar"></i> {{ post.created_on|date:"F d, Y" }} |
+                <i class="fas fa-heart"></i> {{ post.likes.count }} |
+                <i class="fas fa-comment"></i> {{ post.comments.count }}
+            </p>
+            <p class="card-text">{{ post.content|truncatewords:30 }}</p>
+            <a href="{% url 'post_detail' post.slug %}" class="btn btn-sm btn-primary">Read More</a>
+        </div>
+    </div>
+{% empty %}
+    <div class="alert alert-info">
+        {{ profile_user.username }} hasn't published any posts yet.
+    </div>
+{% endfor %}
+{% endblock %}
