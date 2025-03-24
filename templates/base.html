@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Django Mini Blog{% endblock %}</title>
+    <title>{% block title %}Blog{% endblock %}</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <span class="brand-text">Django Mini Blog</span>
+                <span class="brand-text">Blog</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -126,7 +126,7 @@
                     <div class="sidebar-card">
                         <h5 class="sidebar-title">About</h5>
                         <div class="sidebar-content">
-                            <p>Welcome to Django Mini Blog, a modern blogging platform built with Django. Share your thoughts, connect with others, and explore interesting content.</p>
+                            <p>Welcome to Blog, a modern blogging platform built with Django. Share your thoughts, connect with others, and explore interesting content.</p>
                         </div>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5 class="footer-title">Django Mini Blog</h5>
+                    <h5 class="footer-title">Blog</h5>
                     <p class="footer-text">A modern blogging platform for sharing your thoughts and connecting with others.</p>
                 </div>
                 <div class="col-md-3">
@@ -167,7 +167,7 @@
             </div>
             <hr class="footer-divider">
             <div class="footer-bottom">
-                <p class="copyright">&copy; {% now "Y" %} Django Mini Blog. All rights reserved.</p>
+                <p class="copyright">&copy; {% now "Y" %} Blog. All rights reserved.</p>
             </div>
         </div>
     </footer>

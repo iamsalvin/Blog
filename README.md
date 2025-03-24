@@ -1,4 +1,4 @@
-# Django Mini Blog
+# Blog
 
 A modern blogging platform built with Django featuring a glassmorphism UI, dark/light mode toggle, PDF download functionality, and audio narration for blog posts.
 
