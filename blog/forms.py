@@ -21,12 +21,13 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control'}),
-            'categories': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'categories': forms.CheckboxSelectMultiple(attrs={'class': 'category-checkbox-list'}),
         }
     
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         self.fields['categories'].queryset = Category.objects.all()
+        self.fields['categories'].required = False
 
 class CommentForm(forms.ModelForm):
     class Meta:

@@ -588,18 +588,18 @@ a:hover {
     padding: 2rem;
 }
 
-.form-container .form-control,
-.form-container .form-select {
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid #e5e7eb;
+.form-control {
+    background-color: var(--bg-color);
+    border: 1px solid var(--text-light);
+    color: var(--text-primary);
+    border-radius: var(--border-radius);
+    padding: 0.75rem;
     transition: var(--transition);
 }
 
-.form-container .form-control:focus,
-.form-container .form-select:focus {
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.2);
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(93, 95, 239, 0.25);
 }
 
 .form-label {
@@ -610,7 +610,7 @@ a:hover {
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
     padding: 0.75rem 1.5rem;
     font-weight: 500;
     transition: var(--transition);
@@ -626,7 +626,7 @@ a:hover {
     background-color: #e5e7eb;
     border-color: #e5e7eb;
     color: var(--text-secondary);
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
     padding: 0.75rem 1.5rem;
     font-weight: 500;
     transition: var(--transition);
@@ -637,6 +637,53 @@ a:hover {
     border-color: #d1d5db;
     color: var(--text-primary);
     transform: translateY(-2px);
+}
+
+/* Category Checkbox List Styling */
+.category-selection {
+    margin-bottom: 1rem;
+}
+
+.category-checkbox-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    list-style-type: none;
+    padding: 0;
+}
+
+.category-checkbox-list li {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.category-checkbox-list li:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.category-checkbox-list input[type="checkbox"] {
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.category-checkbox-list label {
+    cursor: pointer;
+    margin-bottom: 0;
+    color: var(--text-primary);
+}
+
+[data-theme='dark'] .category-checkbox-list li {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Make sure checkboxes are visible in dark mode */
+[data-theme='dark'] .category-checkbox-list input[type="checkbox"] {
+    accent-color: var(--primary-light);
 }
 
 /* ====== PROFILE ====== */

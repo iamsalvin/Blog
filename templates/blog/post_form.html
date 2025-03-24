@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    {% if form.instance.pk %}Edit Post{% else %}New Post{% endif %} - Django Mini Blog
+    {% if form.instance.pk %}Edit Post{% else %}New Post{% endif %} - Blog
 {% endblock %}
 
 {% block content %}
@@ -40,9 +40,11 @@
             </div>
             
             <div class="mb-3">
-                <label for="{{ form.categories.id_for_label }}" class="form-label">Categories</label>
-                {{ form.categories }}
-                <div class="form-text">Hold down Ctrl (or Command on Mac) to select multiple categories.</div>
+                <label class="form-label">Categories</label>
+                <div class="category-selection">
+                    {{ form.categories }}
+                </div>
+                <div class="form-text">Select one or more categories for your post.</div>
             </div>
             
             <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Update{% else %}Create{% endif %} Post</button>
